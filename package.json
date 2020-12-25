@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "parcel index.html"
+    "start": "npx parcel src/index.html",
+    "build": "cp src/CNAME dist/CNAME & npx parcel build src/index.html",
+    "deploy": "npx gh-pages -d dist"
   },
   "keywords": [],
   "author": "",
@@ -20,7 +21,6 @@
     "sass": "^1.30.0"
   },
   "devDependencies": {
-    "rollup-plugin-svelte": "^7.0.0",
     "svelte": "^3.31.0"
   }
 }
