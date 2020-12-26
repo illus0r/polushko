@@ -3,18 +3,27 @@
 	import Shader from './Shader.svelte';
 
 	let controlsArray = [
-		{name:"r", value:1},
-		{name:"g", value:0},
-		{name:"b", value:0},
-		{name:"radius", value:.5},
+		{name:"Lightness threshold", id:"threshold", value:0.0},
+		{name:"Color shift", id:"colorShift_", value:0.02},
+		{name:"Spot seed", id:"spotSeed", value:0.0},
+		{name:"Spot radius", id:"spotRadius", value:0.5},
+		{name:"Spot details", id:"spotDetails", value:0.5},
+		{name:"Spot amplitude", id:"spotAmplitude", value:0.5},
+		{name:"Blur", id:"blur", value:0.1},
+		{name:"Time", id:"time_", value:0.0},
 	]
+
+
+
 </script>
 
 <style>
-	p {
-		color: purple;
-		font-family: 'Comic Sans MS', cursive;
-		font-size: 2em;
+	.control-panel {
+		text-align: right;
+		color: white;
+		position: absolute;
+		bottom: 0;
+		right: 0;
 	}
 </style>
 

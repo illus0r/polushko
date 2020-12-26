@@ -12,14 +12,14 @@
 
 <script>
 
-import shaderFrag from "./shader.frag";
+import shaderFrag from "./openEye.frag";
 
 export let controlsArray = [];
 
 
 let controlUniforms = {}
 $: controlsArray.forEach(d=>{
-	controlUniforms[d.name] = () => d.value
+	controlUniforms[d.id] = () => d.value
 })
 
 var saveImageButtonObj = {
