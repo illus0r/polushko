@@ -15,12 +15,12 @@
 import shaderFrag from "./shader.frag";
 
 export let controlsArray = [];
-console.log(controlsArray)
 
-let controlsDict = {}
+
+let controlUniforms = {}
 $: controlsArray.forEach(d=>{
-			controlsDict[d.name]={value:d.value}
-		})
+	controlUniforms[d.name] = () => d.value
+})
 
 var saveImageButtonObj = {
 	'Save image': () => { 
@@ -49,10 +49,8 @@ const setupQuad = regl({
 	},
 
 	uniforms: {
+		...controlUniforms,
 		tick: regl.context('tick'),
-		r: () => {return controlsDict.r.value},
-		g: () => {return controlsDict.g.value},
-		b: () => {return controlsDict.b.value},
 		TIME: regl.context('time'),
 		width: regl.context('viewportWidth'),
     height: regl.context('viewportHeight'),

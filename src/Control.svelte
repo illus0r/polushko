@@ -7,7 +7,6 @@
 
 <script>
 
-export let cc
 export let name = 'Control'
 export let min = 0
 export let value = min
