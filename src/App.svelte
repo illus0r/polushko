@@ -3,14 +3,14 @@
 	import Shader from './Shader.svelte';
 
 	let controlsArray = [
-		{name:"Lightness threshold", id:"threshold", value:0.0},
-		{name:"Color shift", id:"colorShift_", value:0.02},
-		{name:"Spot seed", id:"spotSeed", value:0.0},
-		{name:"Spot radius", id:"spotRadius", value:0.5},
-		{name:"Spot details", id:"spotDetails", value:0.5},
-		{name:"Spot amplitude", id:"spotAmplitude", value:0.5},
-		{name:"Blur", id:"blur", value:0.1},
-		{name:"Time", id:"time_", value:0.0, max: 500, step: .1},
+		{name:"Lightness threshold", id:"threshold", min:-1, value:0.0, max:1, step:.01},
+		{name:"Color shift", id:"colorShift_", value:0.02, max:1, step:.01},
+		{name:"Spot seed", id:"spotSeed", value:0.0, max:1, step:.01},
+		{name:"Spot radius", id:"spotRadius", value:0.5, max:1, step:.01},
+		{name:"Spot details", id:"spotDetails", value:0.5, max:1, step:.01},
+		{name:"Spot amplitude", id:"spotAmplitude", value:0.5, max:1, step:.01},
+		{name:"Blur", id:"blur", value:0.1, max:1, step:.01},
+		{name:"Time", id:"time_", value:0.0, max: 500, step: .1, step:.01},
 	]
 
 	let saveImage = () => { 
@@ -20,6 +20,7 @@
 		link.href = canvas.toDataURL("image/png")
 		link.click();
 	}
+
 
 </script>
 
@@ -39,7 +40,7 @@
 
 <div class="control-panel">
 	{#each controlsArray as c}
-		<Control name='{c.name}' bind:value={c.value} min={c.min} max={c.max} step={c.step} />
+		<Control name={c.name} bind:value={c.value} min={c.min} max={c.max} step={c.step} />
 	{/each}
 
 	<button on:click={saveImage}>Save image</button>
