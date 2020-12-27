@@ -22,16 +22,6 @@ $: controlsArray.forEach(d=>{
 	controlUniforms[d.id] = () => d.value
 })
 
-var saveImageButtonObj = {
-	'Save image': () => { 
-		let canvas = document.querySelector("canvas");
-		var link = document.createElement('a');
-		link.download = 'image.png';
-		link.href = canvas.toDataURL("image/png")
-		link.click();
-	}
-}
-
 window.onload = function() {
 
 const regl = require('regl')({
