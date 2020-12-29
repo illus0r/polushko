@@ -26,7 +26,7 @@ window.onload = function() {
 
 const regl = require('regl')({
 	canvas: '#canvas-main',
-	pixelRatio: 1/2,
+	pixelRatio: 1/32,
 	attributes: {preserveDrawingBuffer: true,}
 })
 
