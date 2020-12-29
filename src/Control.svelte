@@ -50,6 +50,7 @@ label{
 	height: 32px;
 	box-sizing: border-box;
 	font-size: inherit;
+	padding: 0 4px;
 }
 
 </style>

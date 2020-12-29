@@ -25,8 +25,8 @@ $: controlsArray.forEach(d=>{
 window.onload = function() {
 
 const regl = require('regl')({
+	pixelRatio: 1,
 	canvas: '#canvas-main',
-	pixelRatio: 1/32,
 	attributes: {preserveDrawingBuffer: true,}
 })
 

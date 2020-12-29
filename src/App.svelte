@@ -45,7 +45,7 @@
 		bottom: 0;
 		right: 0;
 
-		padding: 14px 12px 20px;
+		padding: 14px 15px 20px;
 
 		background: rgba(51, 51, 51, 0.7);
 		border-radius: 4px 4px 0px 4px;
