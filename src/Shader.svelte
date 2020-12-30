@@ -15,6 +15,7 @@ import shaderFrag from "./openEye.frag";
 
 export let controlsArray = [];
 let pixelRatio = 1 // 1/8 is faster
+let canvasWidth, canvasHeight
 
 let controlUniforms = {}
 $: controlsArray.forEach(d=>{
@@ -55,9 +56,19 @@ regl.frame(() => {
 	})
 })
 
+	resizeCanvas()
+}
+
+window.addEventListener('resize', function() {
+	resizeCanvas()
+})
+
+function resizeCanvas() {
+	canvasWidth = document.documentElement.clientWidth*pixelRatio
+	canvasHeight = document.documentElement.clientHeight*pixelRatio
 }
 
 </script>
 
 
-<canvas id="canvas-main" width="{document.documentElement.clientWidth*pixelRatio}" height="{document.documentElement.clientHeight*pixelRatio}"/>
+<canvas id="canvas-main" width="{canvasWidth}" height="{canvasHeight}"/>

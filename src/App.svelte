@@ -4,7 +4,7 @@
 
 	let controlsArray = [
 		{name:"Lightness threshold", id:"threshold", min:-1, value:0.0, max:1, step:.01},
-		{name:"Color shift", id:"colorShift_", value:0.02, max:1, step:.01, min:0},
+		{name:"Color shift", id:"colorShift_", value:0.02, max:.1, step:.01, min:0},
 		{name:"Spot seed", id:"spotSeed", value:0.0, max:1, step:.01, min:0},
 		{name:"Spot radius", id:"spotRadius", value:0.5, max:1, step:.01, min:0},
 		{name:"Spot details", id:"spotDetails", value:0.5, max:1, step:.01, min:0},

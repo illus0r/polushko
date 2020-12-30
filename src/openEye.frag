@@ -45,12 +45,6 @@ struct Point
 
 void main()
 {
-    // Point points[3] = Point[3](
-    //   Point(1.0,  vec2(-19.0, 4.5)),
-    //   Point(-3.0, vec2(2.718, 2.0)),
-    //   Point(29.5, vec2(3.142, 3.333))
-    // );
-
     Point points[pointsNumber];
     for (int i = 0; i < pointsNumber; i++) {
         float mass = noise(
@@ -90,11 +84,12 @@ void main()
         points[i] = Point(mass * 100., posX, posY);
     }
 
-    vec2 xy = uv;
-    xy *= vec2(width, height);
-		xy /= min(width,height);
-		xy += +1.;
-    xy /= 2.;
+
+		vec2 res = vec2(width, height);
+    vec2 xy = (gl_FragCoord.xy*2.-res);
+		xy/=2.;
+		xy /= min(res.x,res.y);
+		xy+=.5;
     
     vec3 field = vec3(0.);
     for (int i = 0; i < pointsNumber; i++) {
