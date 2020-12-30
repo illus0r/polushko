@@ -11,11 +11,10 @@
 
 
 <script>
-
 import shaderFrag from "./openEye.frag";
 
 export let controlsArray = [];
-
+let pixelRatio = 1 // 1/8 is faster
 
 let controlUniforms = {}
 $: controlsArray.forEach(d=>{
@@ -25,7 +24,6 @@ $: controlsArray.forEach(d=>{
 window.onload = function() {
 
 const regl = require('regl')({
-	pixelRatio: 1,
 	canvas: '#canvas-main',
 	attributes: {preserveDrawingBuffer: true,}
 })
@@ -62,4 +60,4 @@ regl.frame(() => {
 </script>
 
 
-<canvas id="canvas-main"/>
+<canvas id="canvas-main" width="{document.documentElement.clientWidth*pixelRatio}" height="{document.documentElement.clientHeight*pixelRatio}"/>
