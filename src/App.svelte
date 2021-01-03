@@ -15,6 +15,18 @@
 		{name:"Time", id:"time_", value:0.0, max: 500, step: .1, step:.01, min:0},
 	]
 	controlsArrays['Yomqo'] = [
+		{name: "time_", id: "time_", value: 0.1, min: 0, max: 1, step:.01},
+		{name: "distance", id: "distance", max: 50, value: 2.1, min: 0, step:.01},
+		{name: "refK", id: "refK", max: 10, value: 0.8, min: 0, step:.01},
+		{name: "bgK", id: "bgK", max: 10, value: 2, min: 0, step:.01},
+		{name: "edgeK", id: "edgeK", max: 10, value: 2.1, min: 0, step:.01},
+		{name: "rainbowK", id: "rainbowK", max: 10, value: 0.5, min: 0, step:.01}	,
+		{name: "noiseAmp", id: "noiseAmp", value: 1.1, min: 0, max: 1, step:.01},
+		{name: "noiseFreq", id: "noiseFreq", max: 10, value: 1.2, min: 0, step:.01},
+		{name: "mousex", id: "mousex", max: 1, min: 0, value: 0, step:.01},
+		{name: "mousey", id: "mousey", max: 1, min: 0, value: 0, step:.01},
+	]
+	controlsArrays['test'] = [
 		{name:"val", id:"val", min:0, value:0.0, max:1, step:.01},
 	]
 
@@ -29,6 +41,8 @@
 	shaderFrag['Yomqo'] = yomqo
 	import openeye from "./openeye.frag";
 	shaderFrag['Open eye'] = openeye
+	import test from "./test.frag";
+	shaderFrag['test'] = test
 
 	let saveImage = () => { 
 		let canvas = document.querySelector("#canvas-main");

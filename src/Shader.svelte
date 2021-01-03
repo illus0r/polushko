@@ -15,8 +15,6 @@
 export let controlsArray = [];
 export let shader;
 
-console.log(controlsArray)
-
 let pixelRatio = 1/8 // 1/8 is faster
 let canvasWidth, canvasHeight
 
@@ -27,37 +25,46 @@ $: controlsArray.forEach(d=>{
 
 window.onload = function() {
 
-const regl = require('regl')({
-	canvas: '#canvas-main',
-	attributes: {preserveDrawingBuffer: true,}
-})
-
-const setupQuad = regl({
-	frag: shader,
-	vert: `precision mediump float;attribute vec2 position;varying vec2 uv;void main() {uv=position;gl_Position = vec4(position, 0, 1);}`,
-
-	attributes: {
-		position: [ -4, -4, 4, -4, 0, 4 ]
-	},
-
-	uniforms: {
-		...controlUniforms,
-		tick: regl.context('tick'),
-		TIME: regl.context('time'),
-		width: regl.context('viewportWidth'),
-    height: regl.context('viewportHeight'),
-	},
-
-	depth: { enable: false },
-
-	count: 3
-})
-
-regl.frame(() => {
-	setupQuad(() => {
-		regl.draw()
+	const regl = require('regl')({
+		canvas: '#canvas-main',
+		attributes: {preserveDrawingBuffer: true,}
 	})
-})
+
+	let setupQuad
+
+	let image = new Image()
+	image.crossOrigin = "Anonymous"
+	image.src = 'https://dianov.org/media/neuroji-evilous.png'
+	image.onload = function () {
+		let imageTexture = regl.texture(image)
+		setupQuad = regl({
+			frag: shader,
+			vert: `precision mediump float;attribute vec2 position;varying vec2 uv;void main() {uv=position;gl_Position = vec4(position, 0, 1);}`,
+
+			attributes: {
+				position: [ -4, -4, 4, -4, 0, 4 ]
+			},
+
+			uniforms: {
+				...controlUniforms,
+				texture: imageTexture,
+				tick: regl.context('tick'),
+				TIME: regl.context('time'),
+				width: regl.context('viewportWidth'),
+				height: regl.context('viewportHeight'),
+			},
+
+			depth: { enable: false },
+
+			count: 3
+		})
+
+		regl.frame(() => {
+			setupQuad(() => {
+				regl.draw()
+			})
+		})
+	}
 
 	resizeCanvas()
 }
