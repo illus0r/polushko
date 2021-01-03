@@ -11,10 +11,13 @@
 
 
 <script>
-import shaderFrag from "./openEye.frag";
 
 export let controlsArray = [];
-let pixelRatio = 1 // 1/8 is faster
+export let shader;
+
+console.log(controlsArray)
+
+let pixelRatio = 1/8 // 1/8 is faster
 let canvasWidth, canvasHeight
 
 let controlUniforms = {}
@@ -30,7 +33,7 @@ const regl = require('regl')({
 })
 
 const setupQuad = regl({
-	frag: shaderFrag,
+	frag: shader,
 	vert: `precision mediump float;attribute vec2 position;varying vec2 uv;void main() {uv=position;gl_Position = vec4(position, 0, 1);}`,
 
 	attributes: {
