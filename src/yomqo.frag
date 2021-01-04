@@ -7,44 +7,44 @@ uniform float width;
 uniform float height;
 
 uniform float time_;
-uniform float distance;
-uniform float refK;
-uniform float bgK;
-uniform float edgeK;
-uniform float rainbowK;
+uniform float stripeWidth;
+uniform float stripeNoise_;
+#define stripeNoise (stripeNoise_ == 1.)
+uniform float stripeOpacity;
 uniform float noiseAmp;
 uniform float noiseFreq;
+uniform float pointInputx;
+uniform float pointInputy;
+uniform float bulbColorR;
+uniform float bulbColorG;
+uniform float bulbColorB;
+#define bulbColor vec4(bulbColorR, bulbColorG, bulbColorB, 1.)
 uniform float mousex;
 uniform float mousey;
-uniform sampler2D texture;
-#define cube texture
-			
-			
-			
-			
-      
+#define iMouse vec2(mousex, mousey)
 
+// glslsandbox uniforms
 #define time TIME
 #define resolution vec2(width, height)
 
 // shadertoy emulation
 #define iTime (time_*100.+TIME/100.)
 #define iResolution vec2(width, height)
-#define mouse vec2(mousex, mousey)
 
 
 ///////////////////////////////////////
 
 
-#define MAX_STEPS 100
-#define MAX_DIST 10.
-#define EPSILON 0.01
+#define MAX_STEPS 400
+#define MAX_DIST 100.
+#define EPSILON 0.001
 #define PI 3.14159265
 #define COL1 1.
 #define COL2 2.
 #define COL3 3.
 
-
+// float rnd(float x) {return fract(54321.987 * sin(987.12345 * x));}
+float rnd(float x) {return 2.*fract(54321.987 * sin(987.12345 * x))-1.;}
 vec4 textureCubeZ(sampler2D tex, vec3 p) {
   float absX = abs(p.x);
   float absY = abs(p.y);
@@ -108,17 +108,55 @@ vec4 textureCubeZ(sampler2D tex, vec3 p) {
 
   return texture2D(tex, uv);
 }
-mat2 rot(float a) {float s = sin(a), c = cos(a);return mat2(c, -s, s, c);}
-float sdBox( vec3 p, vec3 b )
-{
-  vec3 q = abs(p) - b;
-  return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);
+
+float hue2rgb(float f1, float f2, float hue) {
+    if (hue < 0.0)
+        hue += 1.0;
+    else if (hue > 1.0)
+        hue -= 1.0;
+    float res;
+    if ((6.0 * hue) < 1.0)
+        res = f1 + (f2 - f1) * 6.0 * hue;
+    else if ((2.0 * hue) < 1.0)
+        res = f2;
+    else if ((3.0 * hue) < 2.0)
+        res = f1 + (f2 - f1) * ((2.0 / 3.0) - hue) * 6.0;
+    else
+        res = f1;
+    return res;
 }
+
+vec3 hsl2rgb(vec3 hsl) {
+    vec3 rgb;
+
+    if (hsl.y == 0.0) {
+        rgb = vec3(hsl.z); // Luminance
+    } else {
+        float f2;
+
+        if (hsl.z < 0.5)
+            f2 = hsl.z * (1.0 + hsl.y);
+        else
+            f2 = hsl.z + hsl.y - hsl.y * hsl.z;
+
+        float f1 = 2.0 * hsl.z - f2;
+
+        rgb.r = hue2rgb(f1, f2, hsl.x + (1.0/3.0));
+        rgb.g = hue2rgb(f1, f2, hsl.x);
+        rgb.b = hue2rgb(f1, f2, hsl.x - (1.0/3.0));
+    }
+    return rgb;
+}
+
+
+mat2 rot(float a) {float s = sin(a), c = cos(a);return mat2(c, -s, s, c);}
+float sdBox( vec3 p, vec3 b ){  vec3 q = abs(p) - b;  return length(max(q,0.0)) + min(max(q.x,max(q.y,q.z)),0.0);}
 float opSmoothUnion( float d1, float d2, float k ) {    float h = clamp( 0.5 + 0.5*(d2-d1)/k, 0.0, 1.0 );    return mix( d2, d1, h ) - k*h*(1.0-h); }
-//float rnd(float x) {return fract(54321.987 * sin(987.12345 * x));}
-float rnd(float x) {return 2.*fract(54321.987 * sin(987.12345 * x))-1.;}
 float opSmoothSubtraction( float d1, float d2, float k ) {    float h = clamp( 0.5 - 0.5*(d1+d2)/k, 0.0, 1.0 );    return mix( d1, -d2, h ) + k*h*(1.0-h); }
+float fsnoiseDigits(vec2 c){return fract(sin(dot(c, vec2(0.129898, 0.78233))) * 437.585453);}
+float fsnoise(vec2 c){return fract(sin(dot(c, vec2(12.9898, 78.233))) * 43758.5453);}
 float hash( float n ) { return fract(sin(n)*753.5453123); }
+// Some useful functions
 vec3 mod289(vec3 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
 vec2 mod289(vec2 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
 vec3 permute(vec3 x) { return mod289(((x*34.0)+1.0)*x); }
@@ -147,10 +185,10 @@ float snoise(vec2 v) {
                 + i.x + vec3(0.0, i1.x, 1.0 ));
 
     vec3 m = max(0.5 - vec3(
-      dot(x0,x0),
-      dot(x1,x1),
-      dot(x2,x2)
-      ), 0.0);
+                        dot(x0,x0),
+                        dot(x1,x1),
+                        dot(x2,x2)
+                        ), 0.0);
 
     m = m*m ;
     m = m*m ;
@@ -175,43 +213,37 @@ float snoise(vec2 v) {
     g.yz = a0.yz * vec2(x1.x,x2.x) + h.yz * vec2(x1.y,x2.y);
     return 130.0 * dot(m, g);
 }
-
-
+float rand(vec2 n) {
+	return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
+}
+float noise(vec2 n) {
+  //https://gist.github.com/patriciogonzalezvivo/670c22f3966e662d2f83
+	const vec2 d = vec2(0.0, 1.0);
+  vec2 b = floor(n), f = smoothstep(vec2(0.0), vec2(1.0), fract(n));
+	return mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);
+}
 
 
 // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
 vec2 getDist(vec3 p) {
-  p.xy*=rot(PI/4.);
-  p.xz*=rot(PI/4.);
-  // p.x+=10.*snoise(p.yz*.03+iTime*.2) * smoothstep(1., 10., length(p));
-  // p.y+=10.*snoise(p.yz*.03+iTime*.2) * smoothstep(1., 10., length(p));
-  // p=fract(p+.5)-.5;
-  p*=1.9;
-  p+=.1*snoise((p.yz+p.zx)*.3+iTime*1.2);
-  // p.y+=.03*snoise(p.xz*2.3+iTime*.2);
-  // p.z+=.03*snoise(p.xy*2.3+iTime*.2);
-  float boxes = 99999.;
-  float timeChank = (iTime*.3);
-  for(int i=0;i<2;i++){
-    vec3 shift = .3*vec3(
-      snoise(vec2(timeChank+float(i),1.)),
-      snoise(vec2(timeChank+float(i),2.)),
-      snoise(vec2(timeChank+float(i),3.))
-      );
-    vec3 size = .1+.4*vec3(
-      snoise(vec2(timeChank+float(i),5.))+1.,
-      snoise(vec2(timeChank+float(i),6.))+1.,
-      snoise(vec2(timeChank+float(i),7.))+1.
-      );
-    boxes = opSmoothUnion(boxes,sdBox(p+shift, size),.1);
-    // boxes = min(boxes,sdBox(p+shift, size));
-  }
-  boxes-=.1;
-  // p.z+=amp.z*snoise(p.xy*1.3+iTime*.2);
-  // p.y+=amp.y*snoise(p.xz*1.3+iTime*.2);
-
-  return vec2(boxes*.3, COL1);
-  // return vec2(length(p)-.99, COL1);
+    float spheres = length(p) - 1.5;
+    for(int i = 0; i < 4; i++) {
+        vec3 ps = p;
+        // ps *= 2.;
+        ps += vec3( 1. * sin(iTime * 1.5 + 10. * float(i)),
+                    1. * sin(iTime * 2.5 + 10. * float(i) + 10.),
+                    1. * sin(iTime * 3.5 + 10. * float(i) + 2.) );
+        spheres = opSmoothUnion(spheres, length(ps) - .5, 1.5);
+    }
+    for(int i = 0; i < 4; i++) {
+        vec3 ps = p;
+        // ps *= 2.;
+        ps += vec3( 1. * sin(iTime * 1.7 + 20. * float(i)),
+                    1. * sin(iTime * 2.3 + 20. * float(i) + 10.),
+                    1. * sin(iTime * 3.1 + 20. * float(i) + 2.) );
+        spheres = opSmoothSubtraction(spheres, length(ps) - .5, 1.5);
+    }
+  return vec2(spheres, COL1);
 }
 // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
 
@@ -219,22 +251,25 @@ vec2 getDist(vec3 p) {
 
 
 
-vec4 rayMarch(vec3 ro, vec3 rd/*, int inversion*/) {
+
+
+
+
+
+vec3 rayMarch(vec3 ro, vec3 rd) {
 	float d = 0.;
-  float info = 0.;
-  float glow = 9999.;
-  int ii=0;
-  for (int i = 0; i < MAX_STEPS; i++) {
-    ii=i;
-  	vec2 distToClosest = getDist(ro + rd * d);
-    d += distToClosest.x/**float(inversion)*/;
-    info = distToClosest.y;
-    glow = min(glow, abs(distToClosest.x));
-    if(distToClosest.x < EPSILON || d > MAX_DIST) {
-    	break;
+    float info = 0.;
+    int ii=0;
+    for (int i = 0; i < MAX_STEPS; i++) {
+      ii=i;
+    	vec2 distToClosest = getDist(ro + rd * d);
+        d += abs(distToClosest.x);
+        info = distToClosest.y;
+        if(abs(distToClosest.x) < EPSILON || d > MAX_DIST) {
+        	break;
+        }
     }
-  }
-  return vec4(d, info, ii, glow);
+    return vec3(d, info, ii);
 }
 
 vec3 getNormal(vec3 p) {
@@ -264,84 +299,115 @@ vec3 getRayDir(vec2 uv, vec3 p, vec3 l, float z) {
     return d;
 }
 
+
 void mainImage(out vec4 fragColor, in vec2 fragCoord )
 {
     vec2 uv = (fragCoord-.5*iResolution.xy)/iResolution.y;
-    vec3 p, color=vec3(0.),bg,rd,n,ro,ref;
-    vec4 rm;
-    ro=vec3(0,0,distance);
-    ro.xz*=rot(mouse.x*10.);
-    float d, info, dtotal=0., steps, marches, glow;
+    vec3 p, color,rd,rm,n,ro;
+    ro=vec3(0,0.*sin(iTime),-5);
+    // ro.zy*=rot(iMouse.y*10.);
+    ro.xz*=rot(iMouse.x*10.);
+    float d, info, dtotal=0.;
     rd = getRayDir(uv, ro, vec3(0), 1.);
-    // rm = rayMarch(ro, rd);
-    // d = rm[0];
-    // info = rm[1];
-    // steps = rm[2];
 
-    vec3 light = vec3(50, 50, 50);
-    // n = getNormal(p);
+    rm = rayMarch(ro, rd);
+    d = rm[0];
+    info = rm[1];
+    float steps = rm[2];
 
-    bg=textureCubeZ(cube, rd).xyz;
-    //float bgK = 2.;
-    color=bgK*bg;
-    marches+=bgK;
-    // making several marches outside and inside
-    // the surface along the ray
-    for (int i = 0; i < 1; i++) {
-      // if(i==0)continue;
-      rm = rayMarch(ro, rd/*, mod(float(i),2.)==0.?1:-1*/);
-      info = rm[1];
-      glow += rm[3];
-      // color+=0.00000002/glow;
-      // marches+=1.;
-      dtotal += d = rm[0];
-      if (dtotal > MAX_DIST) break;
-      // мы нактнулись.
-      p = ro + rd * d;
-      n = getNormal(p);
-      // находим отражение
-      // float refK = OSC3*10.;
-      //float refK = .8;
-      ref = reflect(rd, n);
-      color+=refK*textureCubeZ(cube, ref).xyz;
-      marches+=refK;
-      // находим блеск
-      // float edgeK = OSC2*10.;
-      //float edgeK = 2.1;
-      color+=edgeK*.1*smoothstep(-.5,1.,dot(ref, rd));
-      color+=edgeK*.2*smoothstep(.6,1.,dot(ref, rd));
-      color+=edgeK*.4*smoothstep(.9,1.,dot(ref, rd));
-      // marches+=edgeK;
+    // vec3 n = getNormal(p);
+    // color = textureCube(bgCube, rd).xyz;
+    // color = texture2D(bg, rd.xy).xyz;
+    // color = vec3(1);//textureCube(bg, rd).xyz;
 
-      // находим цвет
-      // float rainbowK = OSC1;
-      //float rainbowK = .5;
-      vec3 amp = vec3(noiseAmp);
-      // vec3 amp = vec3(50.*OSC4);
-      n.z+=amp.z*snoise(n.xy*noiseFreq);
-      n.x+=amp.x*snoise(n.yz*noiseFreq);
-      n.y+=amp.y*snoise(n.xz*noiseFreq);
-      color+= rainbowK*(n*.5+.5);
-      marches+=rainbowK;
+    // // reflection
+    // for (int i = 0; i < 2; i++) {
+    //   rm = rayMarch(ro, rd);
+    //   info = rm[1];
+    //   dtotal += d = rm[0];
+    //   if (dtotal > MAX_DIST) break;
+    //   p = ro + rd * d;
+    //   n = getNormal(p);
+    //   ro = p + rd * 0.05;
+    //   rd = reflect(rd, n);
+    // }
 
-      // if(i==1){
-        // color=getNormal(p)*5.5+5.5;
-        // marches+=1.;
-      // }
-      ro = p + rd * EPSILON*2.;
+    // refraction
+    // vec3 colorCollected = vec3(1);
+    // float e = iMouse.y;
+    // for (int i = 0; i < 2; i++) {
+    //     rm = rayMarch(ro, rd);
+    //     dtotal += d = rm[0];
+    //     info = rm[1];
+    //     p = ro + rd * d;
+    //     n = getNormal(p);
+    //     ro = p + rd * 0.01;
+    //     rd = refract(rd, n, 1. - e);
+    //     if (dtotal > MAX_DIST) break;
+    //     if (info == COL1) {
+    //         colorCollected += vec3(.2,.9,.1);
+    //     }
+    //     else if (info == COL2) {
+    //         colorCollected += vec3(1,1,0);
+    //     }
+    //     else if (info == COL3) {
+    //         colorCollected += vec3(1.,.1,.1);
+    //     }
+    //
+    //     rm = rayMarch(ro, rd);
+    //     dtotal += d = rm[0];
+    //     p = ro + rd * d;
+    //     n = getNormal(p);
+    //     ro = p + rd * 0.01;
+    //     rd = refract(rd, n, 1. + e);
+    //     if (dtotal > MAX_DIST) break;
+    // }
+
+    if (d < MAX_DIST) {
+      n = getNormal(ro+rd*d).yzx;
+
+      vec3 stripes;
+      if (!stripeNoise) stripes = step(0.,sin(n/stripeWidth));
+
+      // // noisy texture
+      vec3 amp = vec3(4.*noiseAmp);
+      n.z+=amp.z*snoise(n.xy*10.*noiseFreq+iTime);
+      n.x+=amp.x*snoise(n.yz*10.*noiseFreq+iTime);
+      n.y+=amp.y*snoise(n.xz*10.*noiseFreq+iTime);
+      // color = textureCubeZ(bg, n).xyz;
+
+      // vec3 amp = vec3(0.2);
+      // n.x+=amp.x*snoise(n.yz*2.+iTime);
+      // n.y+=amp.y*snoise(n.xz*2.+iTime);
+      // n.z+=amp.z*snoise(n.xy*2.+iTime);
+      // n.xy *= rot(iTime*2.);
+      // n.xz *= rot(iTime*3.);
+      color = hsl2rgb(-n*.5+.5);
+      // color *=  smoothstep(2.,1.5,d);
+
+      // // pepsi colors
+      // n = n*.5+.5;
+      // float r=n.x, b=n.x;
+      // b = smoothstep(0.0, 0.7, r);
+      // r = smoothstep(0.99, 0.3, r);
+      // color = vec3(r, min(r, b), b);
+
+      // //shade
+      // float shade = dot(n, vec3(1,1,-1))*.5+.8;
+      // color *= shade;
+
+      if (stripeNoise) stripes = step(0.,sin(n/stripeWidth));
+      color *= mix(vec3(1.), stripes, stripeOpacity);
+      
+      color = clamp(color, 0., 1.);
+      color*=bulbColor.xyz;
     }
-    color/=marches;
+    else {
+      // start
+      // color = vec3(step(.9,snoise(rd.xy*100.)));
 
-    // color+=texture2D(bg, uv).xyz;
-
-
-    // vec3 dirToLight = normalize(light - p);
-    // vec3 rayMarchLight = rayMarch(p + dirToLight * .06, dirToLight);
-    // float distToObstable = rayMarchLight.x;
-    // float distToLight = length(light - p);
-
-
-
+      color = vec3(1);
+    }
     fragColor = vec4(color,1);
 }
 
@@ -352,5 +418,4 @@ void main(void)
 {
     mainImage(gl_FragColor, gl_FragCoord.xy);
 }
-
 
