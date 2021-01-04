@@ -15,8 +15,7 @@ uniform float rainbowK;
 uniform float noiseAmp;
 uniform float noiseFreq;
 uniform float mousex;
-uniform float mousey;
-#define mouse vec2(mousex, mousey)
+#define mouse vec2(mousex, 1.)
 uniform sampler2D texture;
 #define cube texture
 			

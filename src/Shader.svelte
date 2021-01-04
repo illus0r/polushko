@@ -15,7 +15,7 @@
 export let controlsArray = [];
 export let shader;
 
-let pixelRatio = 1/8 // 1/8 is faster
+let pixelRatio = 1/2 // 1/8 is faster
 let canvasWidth, canvasHeight
 
 let controlUniforms = {}

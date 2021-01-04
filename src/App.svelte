@@ -24,7 +24,6 @@
 		{name: "noiseAmp", id: "noiseAmp", value: 1.1, min: 0, max: 1, step:.01},
 		{name: "noiseFreq", id: "noiseFreq", max: 10, value: 1.2, min: 0, step:.01},
 		{name: "mousex", id: "mousex", max: 1, min: 0, value: 0, step:.01},
-		{name: "mousey", id: "mousey", max: 1, min: 0, value: 0, step:.01},
 	]
 	controlsArrays['Yomqo'] = [
 		{name: "time_", id:"time_", value: 0.1, min: 0, max: 1, step: 0.01, },
@@ -33,13 +32,10 @@
 		{name: "stripeOpacity", id:"stripeOpacity",value: 0.2, min: 0, max: 1, step: 0.01, },
 		{name: "noiseAmp", id:"noiseAmp",value: 0.02, min: 0, max: 1, step: 0.01, },
 		{name: "noiseFreq", id:"noiseFreq",value: 0.2, min: 0, max: 1, step: 0.01, },
-		{name: "pointInputx", id:"pointInputx", min: 0, max: 1, step: 0.01, },
-		{name: "pointInputy", id:"pointInputy", min: 0, max: 1, step: 0.01, },
 		{name: "bulbColorR", id:"bulbColorR", value:1.0, min: 0, max: 1, step: 0.01, },
 		{name: "bulbColorG", id:"bulbColorG", value:.97, min: 0, max: 1, step: 0.01, },
 		{name: "bulbColorB", id:"bulbColorB", value:.93, min: 0, max: 1, step: 0.01, },
 		{name: "mousex", id: "mousex", max: 1, min: 0, value: 0, step:.01},
-		{name: "mousey", id: "mousey", max: 1, min: 0, value: 0, step:.01},
 	]
 	controlsArrays['test'] = [
 		{name:"val", id:"val", min:0, value:0.0, max:1, step:.01},
@@ -54,6 +50,8 @@
 	let shaderFrag = {}
 	import yomqo from "./yomqo.frag";
 	shaderFrag['Yomqo'] = yomqo
+	import bubble from "./bubble.frag";
+	shaderFrag['Bubble'] = bubble
 	import openeye from "./openeye.frag";
 	shaderFrag['Open eye'] = openeye
 	import test from "./test.frag";

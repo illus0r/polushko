@@ -20,8 +20,7 @@ uniform float bulbColorG;
 uniform float bulbColorB;
 #define bulbColor vec4(bulbColorR, bulbColorG, bulbColorB, 1.)
 uniform float mousex;
-uniform float mousey;
-#define iMouse vec2(mousex, mousey)
+#define iMouse vec2(mousex, 1.)
 
 // glslsandbox uniforms
 #define time TIME
