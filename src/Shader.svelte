@@ -15,7 +15,7 @@
 export let controlsArray = [];
 export let shader;
 
-let pixelRatio = 1/2 // 1/8 is faster
+let pixelRatio = 1/1 // 1/8 is faster
 let canvasWidth, canvasHeight
 
 let controlUniforms = {}
@@ -25,6 +25,11 @@ $: controlsArray.forEach(d=>{
 
 window.onload = function() {
 
+	let mouseX, mouseY;
+	document.addEventListener('mousemove', (event) => {
+		mouseX = event.clientX
+		mouseY = event.clientY
+	});
 	const regl = require('regl')({
 		canvas: '#canvas-main',
 		attributes: {preserveDrawingBuffer: true,}
@@ -34,8 +39,10 @@ window.onload = function() {
 
 	let image = new Image()
 	image.crossOrigin = "Anonymous"
-	/*image.src = 'https://dianov.org/media/neuroji-evilous.png'*/
-	image.src = './pol2.jpg'
+	//image.src = 'https://dianov.org/media/neuroji-evilous.png'
+	//image.src = './pol2.jpg'
+	image.src = './pol.jpg'
+	//image.src = './test.png'
 	image.onload = function () {
 		let imageTexture = regl.texture(image)
 		setupQuad = regl({
@@ -53,6 +60,8 @@ window.onload = function() {
 				TIME: regl.context('time'),
 				width: regl.context('viewportWidth'),
 				height: regl.context('viewportHeight'),
+				mouseX: ()=>mouseX,
+				mouseY: ()=>mouseY,
 			},
 
 			depth: { enable: false },
