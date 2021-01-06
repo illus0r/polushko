@@ -19828,7 +19828,7 @@ function create_fragment(ctx) {
       /*canvasHeight*/
       ctx[1]);
       (0, _internal.attr_dev)(canvas, "class", "svelte-zcnnn5");
-      (0, _internal.add_location)(canvas, file, 84, 0, 1557);
+      (0, _internal.add_location)(canvas, file, 93, 0, 1787);
     },
     l: function claim(nodes) {
       throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -19880,12 +19880,19 @@ function instance($$self, $$props, $$invalidate) {
   var _$$props$controlsArra = $$props.controlsArray,
       controlsArray = _$$props$controlsArra === void 0 ? [] : _$$props$controlsArra;
   var shader = $$props.shader;
-  var pixelRatio = 1 / 2; // 1/8 is faster
+  var pixelRatio = 1 / 1; // 1/8 is faster
 
   var canvasWidth, canvasHeight;
   var controlUniforms = {};
 
   window.onload = function () {
+    var _mouseX, _mouseY;
+
+    document.addEventListener("mousemove", function (event) {
+      _mouseX = event.clientX;
+      _mouseY = event.clientY;
+    });
+
     var regl = require("regl")({
       canvas: "#canvas-main",
       attributes: {
@@ -19895,10 +19902,10 @@ function instance($$self, $$props, $$invalidate) {
 
     var setupQuad;
     var image = new Image();
-    image.crossOrigin = "Anonymous";
-    /*image.src = 'https://dianov.org/media/neuroji-evilous.png'*/
+    image.crossOrigin = "Anonymous"; //image.src = 'https://dianov.org/media/neuroji-evilous.png'
+    //image.src = './pol2.jpg'
 
-    image.src = "./pol2.jpg";
+    image.src = "./pol.jpg"; //image.src = './test.png'
 
     image.onload = function () {
       var imageTexture = regl.texture(image);
@@ -19913,7 +19920,13 @@ function instance($$self, $$props, $$invalidate) {
           tick: regl.context("tick"),
           TIME: regl.context("time"),
           width: regl.context("viewportWidth"),
-          height: regl.context("viewportHeight")
+          height: regl.context("viewportHeight"),
+          mouseX: function mouseX() {
+            return _mouseX;
+          },
+          mouseY: function mouseY() {
+            return _mouseY;
+          }
         }),
         depth: {
           enable: false
@@ -20046,7 +20059,7 @@ var Shader = /*#__PURE__*/function (_SvelteComponentDev) {
 var _default = Shader;
 exports.default = _default;
 },{"svelte/internal":"../node_modules/svelte/internal/index.mjs","regl":"../node_modules/regl/dist/regl.js","_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"polushko.frag":[function(require,module,exports) {
-module.exports = "precision mediump float;\n#define GLSLIFY 1\nvarying vec2 uv;\n\nuniform float val;\nuniform float TIME;\nuniform float width;\nuniform float height;\nuniform sampler2D texture;\n\n// room settings\n#define ROOM vec3(2.,1.,2.)\n\nfloat box(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.0))+min(max(q.x,max(q.y,q.z)),0.0);}\n\nmat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}\n\nfloat dist(vec3 p){\n   return -box(p,ROOM);\n}\n\nvec3 norm(vec3 p){\n\tvec2 e = vec2(.01,0.);\n\treturn normalize(vec3(\n\t\tdist(p+e.xyy)-dist(p-e.xyy),\n\t\tdist(p+e.yxy)-dist(p-e.yxy),\n\t\tdist(p+e.yyx)-dist(p-e.yyx)\n\t));\n}\n\nvoid main()\n{\n\tfloat d=0.,e;\n  vec3 p,rd=normalize(vec3(uv,1.)),n;\n\tfor(int i=0;i<99;i++){\n\t\tp=rd*d;\n\t\tp.xz*=rot(TIME/5.);\n\t\td+=e=dist(p);\n\t\tif(e<.01)break;\n\t}\n\tn=norm(p);\n\tif(abs(n.y)>sin(3.1415/4.))return;\n\tif(abs(n.x)>sin(3.1415/4.)){\n\t\tgl_FragColor = texture2D(texture, -p.zy/ROOM.zy*.5+.5);\n\t}\n\telse{\n\t\tgl_FragColor = texture2D(texture, -p.xy/ROOM.xy*.5+.5);\n\t}\n}\n\n";
+module.exports = "precision mediump float;\n#define GLSLIFY 1\nvarying vec2 uv;\n\nuniform float val;\nuniform float TIME;\nuniform float width;\nuniform float height;\nuniform float mouseX;\nuniform float mouseY;\nuniform sampler2D texture;\n\n// room settings\n#define ROOM vec3(2.,1.,2.)\n//#define tex(i) texture2D(texture,-p.zy*vec2(.25,1.)/ROOM.zy*.5+vec2(.125+.25*i,.5))\n\nfloat box(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.0))+min(max(q.x,max(q.y,q.z)),0.0);}\n\nmat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}\n\nfloat dist(vec3 p){\n   return -box(p,ROOM);\n}\n\nvec3 norm(vec3 p){\n\tvec2 e = vec2(.01,0.);\n\treturn normalize(vec3(\n\t\tdist(p+e.xyy)-dist(p-e.xyy),\n\t\tdist(p+e.yxy)-dist(p-e.yxy),\n\t\tdist(p+e.yyx)-dist(p-e.yyx)\n\t));\n}\n\nvoid main()\n{\n\tfloat d=0.,e;\n  vec3 p,rd=normalize(vec3(uv,2.)),n;\n\tfor(int i=0;i<99;i++){\n\t\tp=rd*d;\n\t\tp.xz*=rot(-10.*mouseX/width);\n\t\td+=e=dist(p);\n\t\tif(e<.01)break;\n\t}\n\tn=norm(p);\n\tif(abs(n.y)>sin(3.1415/4.))return;\n\tif(n.x>.707){\n\t\tgl_FragColor = texture2D(texture,(-p.zy*vec2(-.25,1.)/ROOM.zy*.5+vec2(.125+.25*1.,.5)));\n\t\t//gl_FragColor = tex(0.);\n\t}\n\telse if(n.x<-.707){\n\t\tgl_FragColor = texture2D(texture,-p.zy*vec2(.25,1.)/ROOM.zy*.5+vec2(.125+.25*3.,.5));\n\t\t//gl_FragColor = tex(2.);\n\t}\n\telse if(n.z>.707){\n\t\tgl_FragColor = texture2D(texture,-p.xy*vec2(.25,1.)/ROOM.xy*.5+vec2(.125+.25*0.,.5));\n\t\t//gl_FragColor = tex(2.);\n\t}\n\telse{\n\t\tgl_FragColor = texture2D(texture,-p.xy*vec2(-.25,1.)/ROOM.xy*.5+vec2(.125+.25*2.,.5));\n\t\t//gl_FragColor = tex(2.);\n\t}\n}\n\n";
 },{}],"test.frag":[function(require,module,exports) {
 module.exports = "precision mediump float;\n#define GLSLIFY 1\nvarying vec2 uv;\n\nuniform float val;\nuniform float TIME;\nuniform float width;\nuniform float height;\n\nuniform sampler2D texture;\n\nvoid main()\n{\n\tgl_FragColor = texture2D(texture, uv+val);\n}\n\n";
 },{}],"App.svelte":[function(require,module,exports) {
@@ -20843,7 +20856,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50773" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55796" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
