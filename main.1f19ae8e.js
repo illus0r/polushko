@@ -20046,7 +20046,7 @@ var Shader = /*#__PURE__*/function (_SvelteComponentDev) {
 var _default = Shader;
 exports.default = _default;
 },{"svelte/internal":"../node_modules/svelte/internal/index.mjs","regl":"../node_modules/regl/dist/regl.js","_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"polushko.frag":[function(require,module,exports) {
-module.exports = "precision mediump float;\n#define GLSLIFY 1\nvarying vec2 uv;\n\nuniform float val;\nuniform float TIME;\nuniform float width;\nuniform float height;\nuniform sampler2D texture;\n\n// room settings\n#define ROOM vec3(2.,1.,2.)\n\nfloat box(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.0))+min(max(q.x,max(q.y,q.z)),0.0);}\n\nmat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}\n\nfloat dist(vec3 p){\n   return -box(p,ROOM);\n}\n\nvec3 norm(vec3 p){\n\tvec2 e = vec2(.01,0.);\n\treturn normalize(vec3(\n\t\tdist(p+e.xyy)-dist(p-e.xyy),\n\t\tdist(p+e.yxy)-dist(p-e.yxy),\n\t\tdist(p+e.yyx)-dist(p-e.yyx)\n\t));\n}\n\nvoid main()\n{\n\tfloat d=0.,e;\n  vec3 p,rd=normalize(vec3(uv,1.)),n;\n\tfor(int i=0;i<99;i++){\n\t\tp=rd*d;\n\t\tp.xz*=rot(TIME);\n\t\td+=e=dist(p);\n\t\tif(e<.01)break;\n\t}\n\tn=norm(p);\n\tif(abs(n.y)>sin(3.1415/4.))return;\n\tif(abs(n.x)>sin(3.1415/4.)){\n\t\tgl_FragColor = texture2D(texture, -p.zy/ROOM.zy*.5+.5);\n\t}\n\telse{\n\t\tgl_FragColor = texture2D(texture, -p.xy/ROOM.xy*.5+.5);\n\t}\n}\n\n";
+module.exports = "precision mediump float;\n#define GLSLIFY 1\nvarying vec2 uv;\n\nuniform float val;\nuniform float TIME;\nuniform float width;\nuniform float height;\nuniform sampler2D texture;\n\n// room settings\n#define ROOM vec3(2.,1.,2.)\n\nfloat box(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.0))+min(max(q.x,max(q.y,q.z)),0.0);}\n\nmat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}\n\nfloat dist(vec3 p){\n   return -box(p,ROOM);\n}\n\nvec3 norm(vec3 p){\n\tvec2 e = vec2(.01,0.);\n\treturn normalize(vec3(\n\t\tdist(p+e.xyy)-dist(p-e.xyy),\n\t\tdist(p+e.yxy)-dist(p-e.yxy),\n\t\tdist(p+e.yyx)-dist(p-e.yyx)\n\t));\n}\n\nvoid main()\n{\n\tfloat d=0.,e;\n  vec3 p,rd=normalize(vec3(uv,1.)),n;\n\tfor(int i=0;i<99;i++){\n\t\tp=rd*d;\n\t\tp.xz*=rot(TIME/5.);\n\t\td+=e=dist(p);\n\t\tif(e<.01)break;\n\t}\n\tn=norm(p);\n\tif(abs(n.y)>sin(3.1415/4.))return;\n\tif(abs(n.x)>sin(3.1415/4.)){\n\t\tgl_FragColor = texture2D(texture, -p.zy/ROOM.zy*.5+.5);\n\t}\n\telse{\n\t\tgl_FragColor = texture2D(texture, -p.xy/ROOM.xy*.5+.5);\n\t}\n}\n\n";
 },{}],"test.frag":[function(require,module,exports) {
 module.exports = "precision mediump float;\n#define GLSLIFY 1\nvarying vec2 uv;\n\nuniform float val;\nuniform float TIME;\nuniform float width;\nuniform float height;\n\nuniform sampler2D texture;\n\nvoid main()\n{\n\tgl_FragColor = texture2D(texture, uv+val);\n}\n\n";
 },{}],"App.svelte":[function(require,module,exports) {
@@ -20843,7 +20843,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "56830" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "50773" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
