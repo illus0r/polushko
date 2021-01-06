@@ -34,7 +34,8 @@ window.onload = function() {
 
 	let image = new Image()
 	image.crossOrigin = "Anonymous"
-	image.src = 'https://dianov.org/media/neuroji-evilous.png'
+	/*image.src = 'https://dianov.org/media/neuroji-evilous.png'*/
+	image.src = './pol2.jpg'
 	image.onload = function () {
 		let imageTexture = regl.texture(image)
 		setupQuad = regl({

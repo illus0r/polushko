@@ -4,56 +4,22 @@
 
 
 	let controlsArrays = {}
-	controlsArrays['Open eye'] = [
-		{name:"Lightness threshold", id:"threshold", min:-1, value:0.0, max:1, step:.01},
-		{name:"Color shift", id:"colorShift_", value:0.02, max:.1, step:.01, min:0},
-		{name:"Spot seed", id:"spotSeed", value:0.0, max:1, step:.01, min:0},
-		{name:"Spot radius", id:"spotRadius", value:0.5, max:1, step:.01, min:0},
-		{name:"Spot details", id:"spotDetails", value:0.5, max:1, step:.01, min:0},
-		{name:"Spot amplitude", id:"spotAmplitude", value:0.5, max:1, step:.01, min:0},
-		{name:"Blur", id:"blur", value:0.1, max:1, step:.01, min:0},
-		{name:"Time", id:"time_", value:0.0, max: 500, step: .1, step:.01, min:0},
-	]
-	controlsArrays['Bubble'] = [
-		{name: "time_", id: "time_", value: 0.1, min: 0, max: 1, step:.01},
-		{name: "distance", id: "distance", max: 50, value: 2.1, min: 0, step:.01},
-		{name: "refK", id: "refK", max: 10, value: 0.8, min: 0, step:.01},
-		{name: "bgK", id: "bgK", max: 10, value: 2, min: 0, step:.01},
-		{name: "edgeK", id: "edgeK", max: 10, value: 2.1, min: 0, step:.01},
-		{name: "rainbowK", id: "rainbowK", max: 10, value: 0.5, min: 0, step:.01}	,
-		{name: "noiseAmp", id: "noiseAmp", value: 1.1, min: 0, max: 1, step:.01},
-		{name: "noiseFreq", id: "noiseFreq", max: 10, value: 1.2, min: 0, step:.01},
-		{name: "mousex", id: "mousex", max: 1, min: 0, value: 0, step:.01},
-	]
-	controlsArrays['Yomqo'] = [
-		{name: "time_", id:"time_", value: 0.1, min: 0, max: 1, step: 0.01, },
-		{name: "stripeWidth", id:"stripeWidth",value: 0.05, min: 0, max: 1, step: 0.01, },
-		{name: "stripeNoise_", id:"stripeNoise_", value: 1, min: 0, max: 1, step: 1., },
-		{name: "stripeOpacity", id:"stripeOpacity",value: 0.2, min: 0, max: 1, step: 0.01, },
-		{name: "noiseAmp", id:"noiseAmp",value: 0.02, min: 0, max: 1, step: 0.01, },
-		{name: "noiseFreq", id:"noiseFreq",value: 0.2, min: 0, max: 1, step: 0.01, },
-		{name: "bulbColorR", id:"bulbColorR", value:1.0, min: 0, max: 1, step: 0.01, },
-		{name: "bulbColorG", id:"bulbColorG", value:.97, min: 0, max: 1, step: 0.01, },
-		{name: "bulbColorB", id:"bulbColorB", value:.93, min: 0, max: 1, step: 0.01, },
-		{name: "mousex", id: "mousex", max: 1, min: 0, value: 0, step:.01},
-	]
 	controlsArrays['test'] = [
+		{name:"val", id:"val", min:0, value:0.0, max:1, step:.01},
+	]
+	controlsArrays['polushko'] = [
 		{name:"val", id:"val", min:0, value:0.0, max:1, step:.01},
 	]
 
 
-	let shaderName = 'Open eye'
+	let shaderName = 'polushko'
 	if(window.location.hash) {
 		shaderName = window.location.hash.slice(1)//.toLowerCase()
 	}
 
 	let shaderFrag = {}
-	import yomqo from "./yomqo.frag";
-	shaderFrag['Yomqo'] = yomqo
-	import bubble from "./bubble.frag";
-	shaderFrag['Bubble'] = bubble
-	import openeye from "./openeye.frag";
-	shaderFrag['Open eye'] = openeye
+	import polushko from "./polushko.frag";
+	shaderFrag['polushko'] = polushko
 	import test from "./test.frag";
 	shaderFrag['test'] = test
 
