@@ -25,7 +25,7 @@ $: controlsArray.forEach(d=>{
 
 window.onload = function() {
 
-	let mouseX, mouseY;
+	let mouseX=0, mouseY=0;
 	document.addEventListener('mousemove', (event) => {
 		mouseX = event.clientX
 		mouseY = event.clientY
