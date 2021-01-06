@@ -19828,7 +19828,7 @@ function create_fragment(ctx) {
       /*canvasHeight*/
       ctx[1]);
       (0, _internal.attr_dev)(canvas, "class", "svelte-zcnnn5");
-      (0, _internal.add_location)(canvas, file, 93, 0, 1787);
+      (0, _internal.add_location)(canvas, file, 93, 0, 1791);
     },
     l: function claim(nodes) {
       throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -19886,8 +19886,8 @@ function instance($$self, $$props, $$invalidate) {
   var controlUniforms = {};
 
   window.onload = function () {
-    var _mouseX, _mouseY;
-
+    var _mouseX = 0,
+        _mouseY = 0;
     document.addEventListener("mousemove", function (event) {
       _mouseX = event.clientX;
       _mouseY = event.clientY;
@@ -20059,7 +20059,7 @@ var Shader = /*#__PURE__*/function (_SvelteComponentDev) {
 var _default = Shader;
 exports.default = _default;
 },{"svelte/internal":"../node_modules/svelte/internal/index.mjs","regl":"../node_modules/regl/dist/regl.js","_css_loader":"../node_modules/parcel-bundler/src/builtins/css-loader.js"}],"polushko.frag":[function(require,module,exports) {
-module.exports = "precision mediump float;\n#define GLSLIFY 1\nvarying vec2 uv;\n\nuniform float val;\nuniform float TIME;\nuniform float width;\nuniform float height;\nuniform float mouseX;\nuniform float mouseY;\nuniform sampler2D texture;\n\n// room settings\n#define ROOM vec3(2.,1.,2.)\n//#define tex(i) texture2D(texture,-p.zy*vec2(.25,1.)/ROOM.zy*.5+vec2(.125+.25*i,.5))\n\nfloat box(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.0))+min(max(q.x,max(q.y,q.z)),0.0);}\n\nmat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}\n\nfloat dist(vec3 p){\n   return -box(p,ROOM);\n}\n\nvec3 norm(vec3 p){\n\tvec2 e = vec2(.01,0.);\n\treturn normalize(vec3(\n\t\tdist(p+e.xyy)-dist(p-e.xyy),\n\t\tdist(p+e.yxy)-dist(p-e.yxy),\n\t\tdist(p+e.yyx)-dist(p-e.yyx)\n\t));\n}\n\nvoid main()\n{\n\tfloat d=0.,e;\n  vec3 p,rd=normalize(vec3(uv,2.)),n;\n\tfor(int i=0;i<99;i++){\n\t\tp=rd*d;\n\t\tp.xz*=rot(-10.*mouseX/width);\n\t\td+=e=dist(p);\n\t\tif(e<.01)break;\n\t}\n\tn=norm(p);\n\tif(abs(n.y)>sin(3.1415/4.))return;\n\tif(n.x>.707){\n\t\tgl_FragColor = texture2D(texture,(-p.zy*vec2(-.25,1.)/ROOM.zy*.5+vec2(.125+.25*1.,.5)));\n\t\t//gl_FragColor = tex(0.);\n\t}\n\telse if(n.x<-.707){\n\t\tgl_FragColor = texture2D(texture,-p.zy*vec2(.25,1.)/ROOM.zy*.5+vec2(.125+.25*3.,.5));\n\t\t//gl_FragColor = tex(2.);\n\t}\n\telse if(n.z>.707){\n\t\tgl_FragColor = texture2D(texture,-p.xy*vec2(.25,1.)/ROOM.xy*.5+vec2(.125+.25*0.,.5));\n\t\t//gl_FragColor = tex(2.);\n\t}\n\telse{\n\t\tgl_FragColor = texture2D(texture,-p.xy*vec2(-.25,1.)/ROOM.xy*.5+vec2(.125+.25*2.,.5));\n\t\t//gl_FragColor = tex(2.);\n\t}\n}\n\n";
+module.exports = "precision mediump float;\n#define GLSLIFY 1\nvarying vec2 uv;\n\nuniform float val;\nuniform float TIME;\nuniform float width;\nuniform float height;\nuniform float mouseX;\nuniform float mouseY;\nuniform sampler2D texture;\n\n// room settings\n#define ROOM vec3(2.,1.,2.)\n//#define tex(i) texture2D(texture,-p.zy*vec2(.25,1.)/ROOM.zy*.5+vec2(.125+.25*i,.5))\n\nfloat box(vec3 p,vec3 b){vec3 q=abs(p)-b;return length(max(q,0.0))+min(max(q.x,max(q.y,q.z)),0.0);}\n\nmat2 rot(float a){float s=sin(a),c=cos(a);return mat2(c,-s,s,c);}\n\nfloat dist(vec3 p){\n   return -box(p,ROOM);\n}\n\nfloat rand(vec2 n) {\n\treturn fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);\n}\nfloat noise(vec2 n) {\n\tconst vec2 d = vec2(0.0, 1.0);\n  vec2 b = floor(n), f = smoothstep(vec2(0.0), vec2(1.0), fract(n));\n\treturn mix(mix(rand(b), rand(b + d.yx), f.x), mix(rand(b + d.xy), rand(b + d.yy), f.x), f.y);\n}\n\nvec3 norm(vec3 p){\n\tvec2 e = vec2(.01,0.);\n\treturn normalize(vec3(\n\t\tdist(p+e.xyy)-dist(p-e.xyy),\n\t\tdist(p+e.yxy)-dist(p-e.yxy),\n\t\tdist(p+e.yyx)-dist(p-e.yyx)\n\t));\n}\n\nvec2 distort(vec2 p){\n\tfor(float i=0.;i<3.;i++){\n\t\tp.x+=.002*pow(1.3,i)*noise(vec2(100.,20.)/pow(1.3,i)*p+TIME+999.);\n\t\tp.y+=.01 *pow(1.3,i)*noise(vec2(100.,20.)/pow(1.3,i)*p+TIME);\n\t}\n\treturn p;\n}\n\nvoid main()\n{\n\tfloat d=0.,e;\n  vec3 p,rd=normalize(vec3(uv,1.)),n;\n\tfor(int i=0;i<99;i++){\n\t\tp=rd*d;\n\t\tp.xz*=rot(-10.*mouseX/width);\n\t\td+=e=dist(p);\n\t\tif(e<.01)break;\n\t}\n\tn=norm(p);\n\tif(abs(n.y)>sin(3.1415/4.))return;\n\n\tif(n.x>.707){\n\t\tgl_FragColor = texture2D(texture,\n\t\t\t\tdistort(p.zy*vec2(.25,-1.)/ROOM.zy*.5+vec2(.125+.25*1.,.5)));\n\t}\n\telse if(n.x<-.707){\n\t\tgl_FragColor = texture2D(texture,\n\t\t\t\tdistort(p.zy*vec2(-.25,-1.)/ROOM.zy*.5+vec2(.125+.25*3.,.5)));\n\t}\n\telse if(n.z>.707){\n\t\tgl_FragColor = texture2D(texture,\n\t\t\t\tdistort(p.xy*vec2(-.25,-1.)/ROOM.xy*.5+vec2(.125+.25*0.,.5)));\n\t}\n\telse{\n\t\tgl_FragColor = texture2D(texture,\n\t\t\t\tdistort(p.xy*vec2(.25,-1.)/ROOM.xy*.5+vec2(.125+.25*2.,.5)));\n\t}\n}\n\n";
 },{}],"test.frag":[function(require,module,exports) {
 module.exports = "precision mediump float;\n#define GLSLIFY 1\nvarying vec2 uv;\n\nuniform float val;\nuniform float TIME;\nuniform float width;\nuniform float height;\n\nuniform sampler2D texture;\n\nvoid main()\n{\n\tgl_FragColor = texture2D(texture, uv+val);\n}\n\n";
 },{}],"App.svelte":[function(require,module,exports) {
@@ -20856,7 +20856,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "55796" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "61343" + '/');
 
   ws.onmessage = function (event) {
     checkedAssets = {};
